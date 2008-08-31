@@ -1,0 +1,2 @@
+name = amaroklcd
+type = generic
