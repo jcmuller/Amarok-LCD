@@ -56,7 +56,14 @@ $SIG{INT}  = \&bye;
 
 my $status:shared = ($amarok->status() > 0) ? 1 : 0;
 my $sleep:shared = int( 1000000 * (( $amarok->totaltimesecs() / $client->{width} ) || 6 ));
-my $counter:shared = $amarok->elapsedsecs() / $amarok->totaltimesecs() * $client->{width};
+my $counter:shared;
+
+eval {
+    $counter = $amarok->elapsedsecs() / $amarok->totaltimesecs() * $client->{width};
+};
+if (@!) {
+    $counter = 1;
+}
 my $thread = threads->new(\&slider);
 
 while($status>-1) {
