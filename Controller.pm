@@ -106,3 +106,8 @@ sub spawnChild
 }
 
 main();
+
+__END__
+# Local Variables:
+# tab-width:4
+# End:
