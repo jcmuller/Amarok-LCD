@@ -4,16 +4,16 @@
 # Simple class. Defines a constructor and string overloading.
 # 
 ################################################################################
-# $Id: Object.pm 166 2009-08-02 17:14:39Z sputnik $
+# $Id$
 ################################################################################
 # $Log: $
-# $Author: $
-# $Date: $
-# $Rev: $
+# $Author$
+# $Date$
+# $Rev$
 # $URL$
 ################################################################################
 package Object;
-$__PACKAGE__::VERSION = '$Id: Object.pm 166 2009-08-02 17:14:39Z sputnik $ ';
+$__PACKAGE__::VERSION = '$Id$ ';
 
 use strict;
 use warnings;
