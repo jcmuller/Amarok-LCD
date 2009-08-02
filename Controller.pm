@@ -105,7 +105,7 @@ sub spawnChild
 	}
 }
 
-main();
+1;
 
 __END__
 # Local Variables:
