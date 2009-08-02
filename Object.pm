@@ -1,9 +1,23 @@
+################################################################################
+# Object
+#
+# Simple class. Defines a constructor and string overloading.
+# 
+################################################################################
+# $Id$
+################################################################################
+# $Log: $
+################################################################################
+package Object;
+$__PACKAGE__::VERSION = '$Id$ ';
+
 use strict;
 use warnings;
+use overload
+    '""' => \&stringify;
 
-package Object;
-
-our $VERSION = '$Id$ ';
+our @ISA = qw();
+our @Export = qw();
 
 sub new
 {
@@ -23,5 +37,12 @@ sub _initialize
     # Stub
 }
 
-1;
+# Override
+sub stringify
+{
+    my ($this) = @_;
 
+    return "This is the string representation of this object.";
+}
+
+1;
