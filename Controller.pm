@@ -3,7 +3,7 @@ use warnings;
 
 package Controller;
 
-our $VERSION = '$Id: $ ';
+our $VERSION = '$Id$ ';
 
 use Carp;
 use IO::Pipe;

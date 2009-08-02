@@ -3,7 +3,7 @@ use warnings;
 
 package Object;
 
-our $VERSION = '$Id: $ ';
+our $VERSION = '$Id$ ';
 
 sub new
 {

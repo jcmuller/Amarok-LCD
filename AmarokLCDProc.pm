@@ -10,7 +10,7 @@ use Carp;
 use Object;
 
 our @ISA = 'Object';
-our $VERSION = '0.001';
+our $VERSION = '$Id$ ';
 
 sub _initialize
 {
