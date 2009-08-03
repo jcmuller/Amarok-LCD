@@ -84,7 +84,7 @@ sub setSlider
 	}
 
 	my $output = $this->{_output};
-	print "SliderControl: slider: $position\n";
+	$this->debug("SliderControl: slider: $position");
 	print $output "slider: $position\n";
 }
 
@@ -104,7 +104,7 @@ sub work
 		{
 			if ($line =~ /exit/)
 			{
-				print "SliderControl: got exit\n";
+				$this->debug("SliderControl: got exit");
 				threads->exit(0);
 			}
 

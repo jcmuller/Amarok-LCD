@@ -62,11 +62,16 @@ sub setValues
 
 	for my $element (qw(title album artist))
 	{
-		print "InfoControl: ${element}: ", $p->$element, "\n";
-		print $output "${element}: ", $p->$element, "\n";
+		my $data = $p->$element;
+		if (length($data =~ s/^\s+//) == 0)
+		{
+			$data = '                 ';	
+		}
+		$this->debug("InfoControl: ${element}: ", $data);
+		print $output "${element}: ", $data, "\n";
 	}
 
-	print "InfoControl: volume: ", $p->getVolume, "\n";
+	$this->debug("InfoControl: volume: ", $p->getVolume);
 	print $output "volume: ", $p->getVolume, "\n";
 }
 
@@ -78,17 +83,17 @@ sub work
 	my $output    = $this->{_output};
 	my $to_slider = $this->{_to_slider};
 
-	print "InfoControl::work\n";
+	$this->debug("InfoControl::work");
 
 	while (1)
 	{
 		while (<$input>)
 		{
-			print "InfoControl: Got $_";
+			$this->debug("InfoControl: Got $_");
 
 			if (/exit/)
 			{
-				print "InfoControl: $_";
+				$this->debug("InfoControl: $_");
 				print $output $_;
 				print $to_slider $_;
 				threads->exit(0);
@@ -96,12 +101,12 @@ sub work
 			elsif (/trackChange/)
 			{
 				$this->setValues();
-				print "InfoControl: $_";
+				$this->debug("InfoControl: $_");
 				print $to_slider $_;
 			}
 			else
 			{
-				print "InfoControl: $_";
+				$this->debug("InfoControl: $_");
 				print $output $_;
 			}
 		}

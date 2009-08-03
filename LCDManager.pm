@@ -109,7 +109,7 @@ sub setValue
 		$value = 1 if ($value == 0);
 	}
 
-	print "LCDManager: Setting $name $attr $value\n";
+	$this->debug("LCDManager: Setting $name $attr $value");
 	$this->{"_$name"}->set($attr => $value);
 }
 
@@ -125,7 +125,7 @@ sub work
 	{
 		if (/exit/)
 		{
-			print "LCDManager: got exit\n";
+			$this->debug("LCDManager: got exit\n");
 			threads->exit(0);
 		}
 		elsif (/(artist|title|album|volume|slider): (.+)/i)

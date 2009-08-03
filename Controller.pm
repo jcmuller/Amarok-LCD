@@ -42,7 +42,7 @@ sub getSignalHandler
 	my $to_control = $this->{_to_control};
 
 	my $handler = sub {
-		print "Controller: to control: exit\n";
+		$this->debug("Controller: to control: exit");
 		print $to_control "exit\n";
 		$this->{_control}->join;
 		$this->{_slider}->join;
@@ -61,12 +61,12 @@ sub waitForInputAndProcess
 
 	while (<STDIN>)
 	{
-		print "Controller: $_";
+		$this->debug("Controller: $_");
 		print $to_control $_;
 
 		if (/exit/)
 		{
-			print "Controller: to control: exit\n";
+			$this->debug("Controller: to control: exit\n");
 			print $to_control "exit\n";
 			$this->{_control}->join;
 			$this->{_slider}->join;
