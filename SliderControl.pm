@@ -3,10 +3,10 @@
 #
 # Talks to DCOP::Amarok::Player and IO::LCDproc
 ################################################################################
-# $Id: $
+# $Id$
 ################################################################################
 package SliderControl;
-$__PACKAGE__::VERSION = q($Rev: 171 $);
+$__PACKAGE__::VERSION = q($Rev$);
 
 use strict;
 use warnings;
@@ -121,8 +121,3 @@ sub work
 }
 
 1;
-
-__END__
-# Local Variables:
-# tab-width:4
-# End:
