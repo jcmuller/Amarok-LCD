@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-#package main;
+package main;
 
 use strict;
 use warnings;
 use Controller;
 
-our $VERSION = "0.500";
+our $VERSION = "0.501";
 
 sub main
 {
@@ -33,7 +33,7 @@ Juan C. Muller E<lt>jcmuller@gmail.comE<gt>
 
 =head1 COPYRIGHT (COPYLEFT)
 
-2005, Juan C. Muller
+2009, Juan C. Muller
 
 =head1 LICENSE
 
