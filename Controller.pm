@@ -1,43 +1,53 @@
+################################################################################
+# Controller
+################################################################################
+# $Id$
+################################################################################
+package Controller;
+$__PACKAGE__::VERSION = q($Rev$);
+
 use strict;
 use warnings;
 
-package Controller;
-
-our $VERSION = '$Id$ ';
+our @ISA    = qw(Object);
+our @Export = qw();
 
 use Carp;
 use IO::Pipe;
 use Time::HiRes;
-use AmarokLCDProc;
+use InfoControl;
+use LCDManager;
+use SliderControl;
 use Object;
-our @ISA = 'Object';
+use threads;
 
 sub work
 {
 	my ($this) = @_;
 
-	$this->spawnChild;
-
-	if ($this->isParent)
-	{
-		$this->waitForInputAndProcess();
-	}
+	$this->createThreads;
 
 	for (qw/TERM INT HUP/)
 	{
 		$SIG{$_} = $this->getSignalHandler($_);
 	}
+
+	$this->waitForInputAndProcess();
 }
 
 sub getSignalHandler
 {
 	my ($this, $type) = @_;
 
-	my $handler = sub
-	{
-		my $out = $this->{_to_slider_control};
-		print $out "exit\n";
-		waitpid($this->{_pid}, 0);
+	my $to_control = $this->{_to_control};
+
+	my $handler = sub {
+		print "Controller: to control: exit\n";
+		print $to_control "exit\n";
+		$this->{_control}->join;
+		$this->{_slider}->join;
+		$this->{_lcd}->join;
+		exit(0);
 	};
 
 	return $handler;
@@ -47,67 +57,64 @@ sub waitForInputAndProcess
 {
 	my ($this) = @_;
 
-	my $out = $this->{_to_child};
+	my $to_control = $this->{_to_control};
 
-	while (1)
+	while (<STDIN>)
 	{
-		while (<STDIN>)
+		print "Controller: $_";
+		print $to_control $_;
+
+		if (/exit/)
 		{
-			print $out $_;
-			
-			if (/exit/)
-			{
-				waitpid($this->{_pid}, 0);
-				exit(0);
-			}
+			print "Controller: to control: exit\n";
+			print $to_control "exit\n";
+			$this->{_control}->join;
+			$this->{_slider}->join;
+			$this->{_lcd}->join;
+			exit(0);
 		}
 	}
 }
 
-sub isParent
+sub createThreads
 {
 	my ($this) = @_;
-	
-	return $this->{_is_parent};
+
+	my $to_lcd     = new IO::Pipe;
+	my $to_slider  = new IO::Pipe;
+	my $to_control = new IO::Pipe;
+
+	$this->{_lcd} = threads->create('createLcdThread', $this, $to_lcd);
+	$this->{_slider} =
+	  threads->create('createSliderThread', $this, $to_slider, $to_lcd);
+	$this->{_control} =
+	  threads->create('createControlThread', $this, $to_control, $to_lcd,
+		$to_slider);
+
+	$to_control->writer;
+	$to_control->autoflush;
+	$this->{_to_control} = $to_control;
 }
 
-sub spawnChild
+sub createLcdThread
 {
-	my ($this) = @_;
+	my ($this, $to_lcd) = @_;
 
-	my $to_child   = new IO::Pipe;
+	new LCDManager(input => $to_lcd);
+}
 
-	$this->{_status} = 1;
+sub createSliderThread
+{
+	my ($this, $to_slider, $to_lcd) = @_;
 
-	if (my $pid = fork())
-	{
+	new SliderControl(input => $to_slider, output => $to_lcd);
+}
 
-		# Parent
-		$to_child->writer;
-		$to_child->autoflush;
-		$to_child->blocking(0);
+sub createControlThread
+{
+	my ($this, $to_control, $to_lcd, $to_slider) = @_;
 
-		$this->{_is_parent} = 1;
-
-		$this->{_to_child} = $to_child;
-		$this->{_pid}      = $pid;
-	} elsif (defined $pid)
-	{
-		# Child
-		$to_child->reader;
-		$to_child->autoflush;
-		$to_child->blocking(0);
-
-		new AmarokLCDProc(pipe => $to_child);
-	} else
-	{
-		Carp::croak "Unknown state: $!";
-	}
+	new InfoControl(input => $to_control, output => $to_lcd, slider => $to_slider);
 }
 
 1;
-
-__END__
-# Local Variables:
-# tab-width:4
-# End:
