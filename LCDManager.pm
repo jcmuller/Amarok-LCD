@@ -17,7 +17,6 @@ our @Export = qw();
 use Carp;
 use IO::LCDproc;
 use Object;
-use Time::HiRes;
 use threads;
 
 sub _initialize

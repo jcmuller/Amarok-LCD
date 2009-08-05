@@ -1,7 +1,7 @@
 ################################################################################
 # InfoControl
 #
-# Talks to DCOP::Amarok::Player and IO::LCDproc
+# Talks to Amarok.
 ################################################################################
 # $Id$
 ################################################################################
@@ -16,9 +16,7 @@ our @Export = qw();
 
 use Carp;
 use DCOP::Amarok::Player;
-use IO::LCDproc;
 use Object;
-use Time::HiRes;
 use threads;
 
 sub _initialize

@@ -14,7 +14,6 @@ our @Export = qw();
 
 use Carp;
 use IO::Pipe;
-use Time::HiRes;
 use InfoControl;
 use LCDManager;
 use SliderControl;

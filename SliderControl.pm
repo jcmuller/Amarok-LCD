@@ -1,7 +1,7 @@
 ################################################################################
 # SliderControl
 #
-# Talks to DCOP::Amarok::Player and IO::LCDproc
+# Controls the slider that slides through the screen.
 ################################################################################
 # $Id$
 ################################################################################
@@ -16,7 +16,6 @@ our @Export = qw();
 
 use Carp;
 use DCOP::Amarok::Player;
-use IO::LCDproc;
 use Object;
 use Time::HiRes;
 use threads;
