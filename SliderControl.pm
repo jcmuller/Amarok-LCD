@@ -36,6 +36,8 @@ sub _initialize
 	$this->{_input}->autoflush;
 	$this->{_output}->autoflush;
 
+	$this->{_position} = 0;
+
 	my $user = $ENV{USER} || $args{user};
 
 	$this->{_player} = new DCOP::Amarok::Player(user => $user)
@@ -62,7 +64,7 @@ sub setValues
 
 	$this->{_sleep} = int(500_000 * (($totaltimesecs / $width) || 6) / 3);
 #	my $position = int($elapsedsecs / ($totaltimesecs or 60) * $width);
-	my $position = $elapsedsecs / ($totaltimesecs or 60);
+	my $position = int($elapsedsecs / ($totaltimesecs or 60) * 100);
 
 	$this->setSlider($position);
 }
@@ -80,12 +82,17 @@ sub setSlider
 	#	my $width         = $this->{_client_width};
 
 #		$position = int($elapsedsecs / ($totaltimesecs or 60) * $width);
-		$position = $elapsedsecs / ($totaltimesecs or 60);
+		$position = int($elapsedsecs / ($totaltimesecs or 60) * 100);
 	}
 
 	my $output = $this->{_output};
 	$this->debug("SliderControl: slider: $position");
-	print $output "slider: $position\n";
+
+	if ($position != $this->{_position})
+	{
+		$this->{_position} = $position;
+		print $output "slider: $position\n";
+	}
 }
 
 sub work
@@ -93,8 +100,6 @@ sub work
 	my ($this) = @_;
 
 	my $input = $this->{_input};
-
-	STDOUT->autoflush();
 
 	$input->blocking(0);
 
@@ -114,7 +119,7 @@ sub work
 			}
 		}
 
-		$this->setSlider or Carp::croak;
+		$this->setSlider;
 
 		Time::HiRes::usleep $this->{_sleep};
 	}
