@@ -1,7 +1,5 @@
 #!/usr/bin/perl
 
-package main;
-
 use strict;
 use warnings;
 use Controller;
