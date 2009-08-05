@@ -72,7 +72,7 @@ sub _initialize
 
 	$this->{_slider} = new IO::LCDproc::Widget(
 		name => 'slider',
-		data => 'o',
+		data => 'O',
 		yPos => 2,
 	);
 
@@ -105,7 +105,7 @@ sub setValue
 	if ($name eq 'slider')
 	{
 		$attr = 'xPos';
-		$value = int($value * $this->{_client_width});
+		$value = int($value * $this->{_client_width} / 100);
 		$value = 1 if ($value == 0);
 	}
 
@@ -119,10 +119,13 @@ sub work
 
 	my $input = $this->{_input};
 
-	STDOUT->autoflush();
-
 	while (<$input>)
 	{
+		{
+			my $line = $_;
+			$line =~ s/\n$//g;
+			$this->debug("LCDManager: Got '$line'");
+		}
 		if (/exit/)
 		{
 			$this->debug("LCDManager: got exit\n");
@@ -132,7 +135,7 @@ sub work
 		{
 			$this->setValue($1, $2);
 		}
-		elsif (/statusChange/)
+		elsif (/engineStateChange/)
 		{
 			if (/playing/)
 			{
