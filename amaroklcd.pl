@@ -11,7 +11,6 @@ our $VERSION = "0.501";
 
 sub main
 {
-	Object->debug_level(2);
     my $controller = new Controller;
     $controller->work;
 }
