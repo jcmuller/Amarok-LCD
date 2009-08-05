@@ -36,7 +36,7 @@ sub _initialize
 	
 	#Override
 
-	$This->debug("Instantiated new ", ref $this);
+	$this->debug("Instantiated new ", ref $this);
 }
 
 sub DESTROY
