@@ -63,7 +63,7 @@ sub setValues
 	for my $element (qw(title album artist))
 	{
 		my $data = $p->$element;
-		if (length($data =~ s/^\s+//) == 0)
+		if ($data =~ m{^\s*$})
 		{
 			$data = '                 ';	
 		}
@@ -71,8 +71,9 @@ sub setValues
 		print $output "${element}: ", $data, "\n";
 	}
 
-	$this->debug("InfoControl: volume: ", $p->getVolume);
-	print $output "volume: ", $p->getVolume, "\n";
+	my $volume = $p->getVolume;
+	$this->debug("InfoControl: volume: ", $volume);
+	print $output "volume: ", $volume, "\n";
 }
 
 sub work
