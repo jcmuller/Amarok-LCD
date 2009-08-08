@@ -63,9 +63,9 @@ sub waitForInputAndProcess
 		$this->debug("Controller: $_");
 		print $to_control $_;
 
-		if (/exit/)
+		if (/exit|quit/)
 		{
-			$this->debug("Controller: to control: exit\n");
+			$this->debug("Controller: to control: exit");
 			print $to_control "exit\n";
 			$this->{_control}->join;
 			$this->{_slider}->join;
