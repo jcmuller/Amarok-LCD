@@ -42,13 +42,13 @@ sub _initialize
 	$this->{_player} = new DCOP::Amarok::Player(user => $user)
 	  or Carp::croak "Couldn't attach to DCOP: $!";
 
-	$this->setValues;
+	$this->setValues(1);
 	$this->work;
 }
 
 sub setValues
 {
-	my ($this) = @_;
+	my ($this, $initial) = @_;
 
 	my $p      = $this->{_player};
 	my $output = $this->{_output};
@@ -66,12 +66,26 @@ sub setValues
 			$data = '                 ';	
 		}
 		$this->debug("InfoControl: ${element}: ", $data);
-		print $output "${element}: ", $data, "\n";
+		print $output "${element}: $data\n";
 	}
 
 	my $volume = $p->getVolume;
 	$this->debug("InfoControl: volume: ", $volume);
-	print $output "volume: ", $volume, "\n";
+	print $output "volume: $volume\n";
+
+	if ($initial)
+	{
+		my $status = $p->status;
+
+		if ($status == 0)
+		{
+			print $output "engineStateChange: stopped\n";
+		}
+		elsif ($status == 1)
+		{
+			print $output "engineStateChange: paused\n";
+		}
+	}
 }
 
 sub work
