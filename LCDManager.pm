@@ -127,7 +127,7 @@ sub work
 		}
 		if (/exit/)
 		{
-			$this->debug("LCDManager: got exit\n");
+			$this->debug("LCDManager: got exit");
 			threads->exit(0);
 		}
 		elsif (/(artist|title|album|volume|slider): (.+)/i)
