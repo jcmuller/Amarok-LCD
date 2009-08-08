@@ -9,6 +9,11 @@ our $VERSION = "0.501";
 
 sub main
 {
+	if (@ARGV)
+	{
+		Object->debug_method($ARGV[0]);
+	}
+
     my $controller = new Controller;
     $controller->work;
 }
