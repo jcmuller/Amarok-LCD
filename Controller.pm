@@ -14,11 +14,13 @@ our @Export = qw();
 
 use Carp;
 use IO::Pipe;
+use threads;
+
+use Configure;
 use InfoControl;
 use LCDManager;
-use SliderControl;
 use Object;
-use threads;
+use SliderControl;
 
 sub work
 {
@@ -43,11 +45,24 @@ sub waitForInputAndProcess
 	while (<STDIN>)
 	{
 		$this->debug("Controller: $_");
-		print $to_control $_;
 
-		if (/exit|quit/) #.. or Ctrl-D
+		if (/configure/)
 		{
-			last;
+			my $t = threads->create('createConfigureThread', $this);
+			$t->detach;
+		}
+		elsif (/exit|quit/)
+		{
+			$this->debug("Controller: to control: exit");
+			print $to_control "exit\n";
+			$this->{_control}->join;
+			$this->{_slider}->join;
+			$this->{_lcd}->join;
+			exit(0);
+		}
+		else
+		{
+			print $to_control $_;
 		}
 	}
 
@@ -104,6 +119,13 @@ sub createControlThread
 	my ($this, $to_control, $to_lcd, $to_slider) = @_;
 
 	new InfoControl(input => $to_control, output => $to_lcd, slider => $to_slider);
+}
+
+sub createConfigureThread
+{
+	my ($this) = @_;
+
+	new Configure;
 }
 
 1;
