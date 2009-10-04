@@ -105,7 +105,7 @@ sub setValue
 	{
 		$attr = 'xPos';
 		$value = int($value * $this->{_client_width} / 100);
-		$value = 1 if ($value == 0);
+		$value ||= 1;
 	}
 
 	$this->debug("LCDManager: Setting $name $attr $value");

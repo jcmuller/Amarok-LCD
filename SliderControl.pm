@@ -57,12 +57,9 @@ sub setValues
 		Carp::croak "No reference to DCOP::Amarok::Player object! $!";
 	}
 
-	my $elapsedsecs   = $p->elapsedsecs;
-	my $totaltimesecs = $p->totaltimesecs;
-	my $width         = $this->{_client_width} || 20;
+	my $elapsedsecs   = $p->trackCurrentTime;
+	my $totaltimesecs = $p->trackTotalTime;
 
-	$this->{_sleep} = int(500_000 * (($totaltimesecs / $width) || 6) / 3);
-#	my $position = int($elapsedsecs / ($totaltimesecs or 60) * $width);
 	my $position = int($elapsedsecs / ($totaltimesecs or 60) * 100);
 
 	$this->setSlider($position);
@@ -76,12 +73,10 @@ sub setSlider
 	{
 		my $p = $this->{_player};
 
-		my $elapsedsecs   = $p->elapsedsecs;
-		my $totaltimesecs = $p->totaltimesecs;
-	#	my $width         = $this->{_client_width};
+		my $elapsedsecs   = $p->trackCurrentTime;
+		my $totaltimesecs = $p->trackTotalTime;
 
-#		$position = int($elapsedsecs / ($totaltimesecs or 60) * $width);
-		$position = int($elapsedsecs / ($totaltimesecs or 60) * 100);
+		$position = int($elapsedsecs / ($totaltimesecs or 60) * 100) || 5;
 	}
 
 	my $output = $this->{_output};
@@ -120,7 +115,7 @@ sub work
 
 		$this->setSlider;
 
-		Time::HiRes::usleep $this->{_sleep};
+		Time::HiRes::usleep 500_000;
 	}
 }
 

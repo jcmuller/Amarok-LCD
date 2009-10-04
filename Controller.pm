@@ -28,28 +28,10 @@ sub work
 
 	for (qw/TERM INT HUP/)
 	{
-		$SIG{$_} = $this->getSignalHandler($_);
+		$SIG{$_} = sub { $this->doExit };
 	}
 
 	$this->waitForInputAndProcess();
-}
-
-sub getSignalHandler
-{
-	my ($this, $type) = @_;
-
-	my $to_control = $this->{_to_control};
-
-	my $handler = sub {
-		$this->debug("Controller: to control: exit");
-		print $to_control "exit\n";
-		$this->{_control}->join;
-		$this->{_slider}->join;
-		$this->{_lcd}->join;
-		exit(0);
-	};
-
-	return $handler;
 }
 
 sub waitForInputAndProcess
@@ -63,16 +45,27 @@ sub waitForInputAndProcess
 		$this->debug("Controller: $_");
 		print $to_control $_;
 
-		if (/exit|quit/)
+		if (/exit|quit/) #.. or Ctrl-D
 		{
-			$this->debug("Controller: to control: exit");
-			print $to_control "exit\n";
-			$this->{_control}->join;
-			$this->{_slider}->join;
-			$this->{_lcd}->join;
-			exit(0);
+			last;
 		}
 	}
+
+	$this->doExit();
+}
+
+sub doExit
+{
+	my ($this) = @_;
+
+	my $to_control = $this->{_to_control};
+
+	$this->debug("Controller: to control: exit");
+	print $to_control "exit\n";
+	$this->{_control}->join;
+	$this->{_slider}->join;
+	$this->{_lcd}->join;
+	exit(0);
 }
 
 sub createThreads
@@ -83,12 +76,9 @@ sub createThreads
 	my $to_slider  = new IO::Pipe;
 	my $to_control = new IO::Pipe;
 
-	$this->{_lcd} = threads->create('createLcdThread', $this, $to_lcd);
-	$this->{_slider} =
-	  threads->create('createSliderThread', $this, $to_slider, $to_lcd);
-	$this->{_control} =
-	  threads->create('createControlThread', $this, $to_control, $to_lcd,
-		$to_slider);
+	$this->{_lcd}     = threads->create('createLcdThread', $this, $to_lcd);
+	$this->{_slider}  = threads->create('createSliderThread', $this, $to_slider, $to_lcd);
+	$this->{_control} = threads->create('createControlThread', $this, $to_control, $to_lcd, $to_slider);
 
 	$to_control->writer;
 	$to_control->autoflush;
